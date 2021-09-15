@@ -1,0 +1,16 @@
+{
+  "name": "batch_NFT",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@0xcert/ethereum-erc721": "^2.4.0",
+    "@openzeppelin/contracts": "^4.3.1"
+  }
+}

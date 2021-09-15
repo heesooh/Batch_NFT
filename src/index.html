@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Batch Transfer</title>
+  <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js" integrity="sha256-nWBTbvxhJgjslRyuAKJHK+XcZPlCnmIAAMixz6EefVk=" crossorigin="anonymous"></script>
+  <script language="javascript" type="text/javascript" src="./abi.js"></script>
+  <script>
+    // JavaScript code to interact with the deployed contract.
+
+    // When the page loads, program will do the commands inside {}.
+    window.addEventListener('load', async () => {
+
+    var contract;
+    const contractAddress = "0x210b7B4e3B68524874b2BC62741cbaA719dEAcD1";
+
+    // async() call definition stored to const contractMessage
+    const contractMessage = async () => {
+    // Get the contract instance using ABI & contractAddress
+    contract = new web3.eth.Contract(abi, contractAddress);
+    //Call smart contract method
+    // let message = await contract.methods.batchTransfer(/* missing arguments */).call();
+    let message = await contract.methods.getMessage().call();
+    return message;
+    }
+
+    // Check if the browser supports Ethereum transactions.
+    if (window.ethereum) {
+        window.web3 = new Web3(ethereum);
+        try {
+            // Request account access if needed
+            await ethereum.enable();
+            var message = await contractMessage();
+            var elm = document.getElementById("message");
+            elm.innerHTML = message;
+        } catch (error) {
+            // User denied account access...
+        }
+        }
+        // Return log message when the browser does not support Ethereum transactions.
+        else {
+            console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+        }
+    });
+</script>
+</head>
+<body>
+  <div id="message"></div>
+</body>
+</html>
