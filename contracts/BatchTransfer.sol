@@ -16,8 +16,8 @@ contract BatchTransfer {
         message = newMessage;
     }
     // ---------------------------------------------
-
-    constructor() ERC721("BatchTransfer", "BTS") { }
+    bytes splitStringTemp;
+    bytes[] splitStringResult;
 
     function getBalance(address _addr, address _owner) external view returns(uint256) {
         require(_addr == msg.sender == true, "Need operator approval for 3rd party transafers.");
@@ -28,38 +28,44 @@ contract BatchTransfer {
     function singleTransfer(address _addr, address _from, address _to, uint _tokenid) external {
         require(_to != address(0x0), "_to must be non-zero.");
         require(_from == msg.sender == true, "Need operator approval for 3rd party transafers.");
-        safeTransferFrom(_from, _to, _tokenid, "");
         ERC721 smart_contract = ERC721(_addr);
         smart_contract.safeTransferFrom(_from, _to, _tokenid, "");
     }
+
+    // event print_address(address value);
+    // event print_uint(uint value);
     
     function batchTransfer(string[] memory addr_tokenid_list, address _from, address _to) public {
         require(_to != address(0x0), "_to must be non-zero.");
         require(_from == msg.sender == true, "Need operator approval for 3rd party transafers.");
         for (uint i = 0; i < addr_tokenid_list.length; i++) {
-            bytes[2] memory addr_tokenid = splitString(addr_tokenid_list[i], ", ");
+            bytes[] memory addr_tokenid = splitString(addr_tokenid_list[i], ", ");
             address addr = bytesToAddress(addr_tokenid[0]);
-            uint tokenId = bytesToUint(addr_tokenid[1]);
-            ERC721 smart_contract = ERC721(addr);
-            smart_contract.safeTransferFrom(_from, _to, tokenId, "");
+            for (uint j = 1; j < addr_tokenid.length; j++) {
+                uint tokenId = bytesToUint(addr_tokenid[j]);
+
+                // emit print_address(addr);
+                // emit print_uint(tokenId);
+
+                ERC721 smart_contract = ERC721(addr);
+                smart_contract.safeTransferFrom(_from, _to, tokenId, "");
+            }
         }
     }
-    
-    bytes splitStringTemp;
-    function splitString(string memory input, string memory delimiter) internal returns(bytes[2] memory) {
-        bytes[2] memory splitStringResult;
+
+    function splitString(string memory input, string memory delimiter) internal returns(bytes[] memory) {
         bytes memory input_byte = bytes(input);
         bytes memory delimiter_byte = bytes(delimiter);
         for(uint i; i < input_byte.length ; i++){
             if (input_byte[i] != delimiter_byte[0]) {
                 splitStringTemp.push(input_byte[i]);
             } else { 
-                splitStringResult[0] = splitStringTemp;
+                splitStringResult.push(splitStringTemp);
                 splitStringTemp = "";
             }
         }
         if (input_byte[input_byte.length-1] != delimiter_byte[0]) { 
-            splitStringResult[1] = splitStringTemp;
+            splitStringResult.push(splitStringTemp);
             splitStringTemp = "";
         }
         return splitStringResult;
